@@ -1,0 +1,13 @@
+[Unit]
+Description=DHCPv4 Server Daemon
+After=syslog.target network.target ldap.service
+
+[Service]
+Environment=CONFIGFILE=/etc/dhcpd.conf LEASEFILE=/var/lib/dhcpd/dhcpd.leases
+EnvironmentFile=-/etc/sysconfig/dhcpd
+Type=forking
+PIDFile=/run/dhcpd/dhcpd.pid
+ExecStart=/usr/sbin/dhcpd -pf /run/dhcpd/dhcpd.pid -cf $CONFIGFILE -lf $LEASEFILE $OPTIONS $INTERFACES
+
+[Install]
+WantedBy=multi-user.target
