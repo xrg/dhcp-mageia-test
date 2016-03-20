@@ -434,9 +434,9 @@ main(int argc, char **argv) {
 
 	if (!quiet) {
 		log_info("%s %s", message, PACKAGE_VERSION);
-		log_info(copyright);
-		log_info(arr);
-		log_info(url);
+		log_info("%s", copyright);
+		log_info("%s", arr);
+		log_info("%s", url);
 	} else {
 		quiet = 0;
 		log_perror = 0;

@@ -420,9 +420,9 @@ main(int argc, char **argv) {
 
 	if (!quiet) {
 		log_info("%s %s", message, PACKAGE_VERSION);
-		log_info(copyright);
-		log_info(arr);
-		log_info(url);
+		log_info("%s", copyright);
+		log_info("%s", arr);
+		log_info("%s", url);
 		log_info("%s", "");
 	} else {
 		log_perror = 0;
@@ -701,9 +701,9 @@ main(int argc, char **argv) {
 static void usage()
 {
 	log_info("%s %s", message, PACKAGE_VERSION);
-	log_info(copyright);
-	log_info(arr);
-	log_info(url);
+	log_info("%s", copyright);
+	log_info("%s", arr);
+	log_info("%s", url);
 
 
 	log_fatal("Usage: dhclient "

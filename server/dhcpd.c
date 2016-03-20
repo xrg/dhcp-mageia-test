@@ -476,9 +476,9 @@ main(int argc, char **argv) {
 
 	if (!quiet) {
 		log_info("%s %s", message, PACKAGE_VERSION);
-		log_info (copyright);
-		log_info (arr);
-		log_info (url);
+		log_info ("%s", copyright);
+		log_info ("%s", arr);
+		log_info ("%s", url);
 	} else {
 		quiet = 0;
 		log_perror = 0;
@@ -1098,9 +1098,9 @@ void postconf_initialization (int quiet)
 					log_perror = 0;
 					log_info("%s %s",
 						 message, PACKAGE_VERSION);
-					log_info (copyright);
-					log_info (arr);
-					log_info (url);
+					log_info ("%s", copyright);
+					log_info ("%s", arr);
+					log_info ("%s", url);
 					log_perror = tmp;
 				}
 			} else
@@ -1207,8 +1207,8 @@ void postdb_startup (void)
 static void
 usage(void) {
 	log_info("%s %s", message, PACKAGE_VERSION);
-	log_info(copyright);
-	log_info(arr);
+	log_info("%s", copyright);
+	log_info("%s", arr);
 
 	log_fatal("Usage: dhcpd [-p <UDP port #>] [-f] [-d] [-q] [-t|-T]\n"
 #ifdef DHCPv6
