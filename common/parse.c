@@ -938,8 +938,8 @@ TIME
 parse_date_core(cfile)
 	struct parse *cfile;
 {
-	int guess;
-	int tzoff, year, mon, mday, hour, min, sec;
+	TIME guess;
+	long int tzoff, year, mon, mday, hour, min, sec;
 	const char *val;
 	enum dhcp_token token;
 	static int months[11] = { 31, 59, 90, 120, 151, 181,
@@ -965,7 +965,7 @@ parse_date_core(cfile)
 		}
 
 		token = next_token(&val, NULL, cfile); /* consume number */
-		guess = atoi(val);
+		guess = atol(val);
 
 		return((TIME)guess);
 	}
@@ -993,7 +993,7 @@ parse_date_core(cfile)
 	   somebody invents a time machine, I think we can safely disregard
 	   it.   This actually works around a stupid Y2K bug that was present
 	   in a very early beta release of dhcpd. */
-	year = atoi(val);
+	year = atol(val);
 	if (year > 1900)
 		year -= 1900;
 
@@ -1017,7 +1017,7 @@ parse_date_core(cfile)
 		return((TIME)0);
 	}
 	token = next_token(&val, NULL, cfile); /* consume month */	
-	mon = atoi(val) - 1;
+	mon = atol(val) - 1;
 
 	/* Slash separating month from day... */
 	token = peek_token(&val, NULL, cfile);
@@ -1039,7 +1039,7 @@ parse_date_core(cfile)
 		return((TIME)0);
 	}
 	token = next_token(&val, NULL, cfile); /* consume day of month */
-	mday = atoi(val);
+	mday = atol(val);
 
 	/* Hour... */
 	token = peek_token(&val, NULL, cfile);
@@ -1050,7 +1050,7 @@ parse_date_core(cfile)
 		return((TIME)0);
 	}
 	token = next_token(&val, NULL, cfile); /* consume hour */
-	hour = atoi(val);
+	hour = atol(val);
 
 	/* Colon separating hour from minute... */
 	token = peek_token(&val, NULL, cfile);
@@ -1072,7 +1072,7 @@ parse_date_core(cfile)
 		return((TIME)0);
 	}
 	token = next_token(&val, NULL, cfile); /* consume minute */
-	min = atoi(val);
+	min = atol(val);
 
 	/* Colon separating minute from second... */
 	token = peek_token(&val, NULL, cfile);
@@ -1094,13 +1094,13 @@ parse_date_core(cfile)
 		return((TIME)0);
 	}
 	token = next_token(&val, NULL, cfile); /* consume second */
-	sec = atoi(val);
+	sec = atol(val);
 
 	tzoff = 0;
 	token = peek_token(&val, NULL, cfile);
 	if (token == NUMBER) {
 		token = next_token(&val, NULL, cfile); /* consume tzoff */
-		tzoff = atoi(val);
+		tzoff = atol(val);
 	} else if (token != SEMI) {
 		token = next_token(&val, NULL, cfile);
 		parse_warn(cfile,
