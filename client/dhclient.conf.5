@@ -202,7 +202,8 @@ responding to the client send the client its values for the specified
 options.  Only the option names should be specified in the request
 statement - not option parameters.  By default, the DHCPv4 client
 requests the subnet-mask, broadcast-address, time-offset, routers,
-domain-name, domain-name-servers and host-name options while the DHCPv6
+domain-search, domain-name, domain-name-servers, host-name, nis-domain,
+nis-servers, ntp-servers and interface-mtu options while the DHCPv6
 client requests the dhcp6 name-servers and domain-search options.  Note
 that if you enter a \'request\' statement, you over-ride these defaults
 and these options will not be requested.
@@ -713,7 +714,7 @@ interface "ep0" {
     supersede domain-search "fugue.com", "rc.vix.com", "home.vix.com";
     prepend domain-name-servers 127.0.0.1;
     request subnet-mask, broadcast-address, time-offset, routers,
-	    domain-name, domain-name-servers, host-name;
+	    domain-search, domain-name, domain-name-servers, host-name;
     require subnet-mask, domain-name-servers;
     script "CLIENTBINDIR/dhclient-script";
     media "media 10baseT/UTP", "media 10base2/BNC";
