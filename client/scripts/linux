@@ -13,6 +13,8 @@
 
 # 1. ifconfig down apparently deletes all relevant routes and flushes
 # the arp cache, so this doesn't need to be done explicitly.
+# 1.1. ifconfig $interface inet 0 is enough, and prevents unneeded
+# deassociation on wireless interfaces
 
 # 2. The alias address handling here has not been tested AT ALL.
 # I'm just going by the doc of modern Linux ip aliasing, which uses
@@ -178,7 +180,7 @@ if [ x$reason = xBOUND ] || [ x$reason = xRENEW ] || \
   if [ x$old_ip_address != x ] && [ x$old_ip_address != x$new_ip_address ]; then
     # IP address changed. Bringing down the interface will delete all routes,
     # and clear the ARP cache.
-    ifconfig $interface inet 0 down
+    ifconfig $interface inet 0
 
   fi
   if [ x$old_ip_address = x ] || [ x$old_ip_address != x$new_ip_address ] || \
@@ -247,7 +249,7 @@ if [ x$reason = xEXPIRE ] || [ x$reason = xFAIL ] || [ x$reason = xRELEASE ] \
   fi
   if [ x$old_ip_address != x ]; then
     # Shut down interface, which will delete routes and clear arp cache.
-    ifconfig $interface inet 0 down
+    ifconfig $interface inet 0
   fi
   if [ x$alias_ip_address != x ]; then
     ifconfig $interface:0 inet $alias_ip_address $alias_subnet_arg
@@ -282,7 +284,7 @@ if [ x$reason = xTIMEOUT ]; then
    fi
     exit_with_hooks 0
   fi
-  ifconfig $interface inet 0 down
+  ifconfig $interface inet 0
   exit_with_hooks 1
 fi
 
