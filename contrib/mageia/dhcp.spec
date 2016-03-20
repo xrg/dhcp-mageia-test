@@ -1,3 +1,6 @@
+%define git_repo dhcp
+%define git_head HEAD
+
 %define _catdir /var/cache/man
 
 %define major_version    4.2.5
@@ -5,45 +8,25 @@
 
 Name:		dhcp
 Epoch:		3
-Version:	%{major_version}%{patch_version}
-Release:	%mkrel 2
+Version:	%git_get_ver
+Release:	%mkrel %git_get_rel2
 Summary:	The ISC DHCP (Dynamic Host Configuration Protocol) server/relay agent/client
 License:	Distributable
 Group:		System/Servers
 URL:		http://www.isc.org/software/dhcp
-Source0:	ftp://ftp.isc.org/isc/%{name}/%{major_version}-%{patch_version}/%{name}-%{major_version}-%{patch_version}.tar.gz
-Source1:	ftp://ftp.isc.org/isc/%{name}/%{major_version}-%{patch_version}/%{name}-%{major_version}-%{patch_version}.tar.gz.sha512.asc
-Source2:	dhcpd.conf
-Source4:	dhcp-dynamic-dns-examples.tar.bz2
-Source7:	dhcpreport.pl
-Source8:	dhcpd-chroot.sh
+Source:		%git_bs_source %{name}-%{version}.tar.gz
+Source1:	%{name}-gitrpm.version
+Source2:	%{name}-changelog.gitrpm.txt
 # (eugeni) dhclient-exit-hooks script
-Source9:	dhclient-exit-hooks
-Source10:	draft-ietf-dhc-ldap-schema-01.txt
-Source12:	dhcpd.service
-Source14:	dhcpd6.service
-Source16:	dhcrelay.service
-Source17:	dhcpd.tmpfiles
-Source18:	dhclient.tmpfiles
-Source19:	dhcrelay.tmpfiles
 # mageia patches
-Patch100:	dhcp-4.2.2-ifup.patch
-Patch101:	dhcp-4.2.2-fix-format-errors.patch
 # prevents needless deassociation, working around mdv bug #43441
-Patch102:	dhcp-4.1.1-prevent_wireless_deassociation.patch
-Patch103:	dhcp-4.2.5-P1-man.patch
 # fedora patches
-Patch7:		dhcp-4.2.0-default-requested-options.patch
-Patch8:		dhcp-4.2.2-xen-checksum.patch
-Patch15:	dhcp-4.2.2-missing-ipv6-not-fatal.patch
-Patch17:	dhcp-4.2.0-add_timeout_when_NULL.patch
-Patch18:	dhcp-4.2.4-64_bit_lease_parse.patch
 BuildRequires:	groff-for-man
 BuildRequires:	openldap-devel
 Requires(post):	rpm-helper >= 0.24.8-1
 Requires(preun): rpm-helper >= 0.24.8-1
 
-%description 
+%description
 DHCP (Dynamic Host Configuration Protocol) is a protocol which allows 
 individual devices on an IP network to get their own network configuration
 information (IP address, subnetmask, broadcast address, etc.) from a DHCP
@@ -145,27 +128,19 @@ DHCP devel contains all of the libraries and headers for developing with the
 Internet Software Consortium (ISC) dhcpctl API.
 
 %prep
-%setup -q -n %{name}-%{major_version}-%{patch_version}
-%patch100 -p1 -b .ifup
-%patch101 -p1 -b .format_not_a_string_literal_and_no_format_arguments
-%patch102 -p1 -b .prevent_wireless_deassociation
-%patch103 -p1 -b .man
+%git_get_source
+%setup -q
 
 # Add NIS domain, NIS servers, NTP servers, interface-mtu and domain-search
 # to the list of default requested DHCP options
-%patch7 -p1 -b .requested
 # Handle Xen partial UDP checksums
-%patch8 -p1 -b .xen
 # If the ipv6 kernel module is missing, do not segfault
 # (Submitted to dhcp-bugs@isc.org - [ISC-Bugs #19367])
-%patch15 -p1 -b .noipv6
 # Handle cases in add_timeout() where the function is called with a NULL
 # value for the 'when' parameter
-%patch17 -p1 -b .dracut
 # Ensure 64-bit platforms parse lease file dates & times correctly
-%patch18 -p1 -b .64-bit_lease_parse
 
-install -m0644 %{SOURCE10} doc
+install -m0644 contrib/mageia/draft-ietf-dhc-ldap-schema-01.txt doc
 
 %build
 %serverbuild
@@ -194,20 +169,20 @@ mv %{buildroot}%{_sbindir}/dhclient %{buildroot}/sbin/dhclient
 install -m 755 client/scripts/linux %{buildroot}/sbin/dhclient-script
 
 install -d %{buildroot}%{_unitdir}
-install -m 644 %{SOURCE12} %{buildroot}%{_unitdir}/dhcpd.service
-install -m 644 %{SOURCE14} %{buildroot}%{_unitdir}/dhcpd6.service
-install -m 644 %{SOURCE16} %{buildroot}%{_unitdir}/dhcrelay.service
+install -m 644 contrib/mageia/dhcpd.service %{buildroot}%{_unitdir}/dhcpd.service
+install -m 644 contrib/mageia/dhcpd6.service %{buildroot}%{_unitdir}/dhcpd6.service
+install -m 644 contrib/mageia/dhcrelay.service %{buildroot}%{_unitdir}/dhcrelay.service
 
-install -D -p -m 644 %{SOURCE17} %{buildroot}%{_tmpfilesdir}/dhcpd.conf
-install -D -p -m 644 %{SOURCE18} %{buildroot}%{_tmpfilesdir}/dhclient.conf
-install -D -p -m 644 %{SOURCE19} %{buildroot}%{_tmpfilesdir}/dhcrelay.conf
+install -D -p -m 644 contrib/mageia/dhcpd.tmpfiles %{buildroot}%{_tmpfilesdir}/dhcpd.conf
+install -D -p -m 644 contrib/mageia/dhclient.tmpfiles %{buildroot}%{_tmpfilesdir}/dhclient.conf
+install -D -p -m 644 contrib/mageia/dhcrelay.tmpfiles %{buildroot}%{_tmpfilesdir}/dhcrelay.conf
 
-install -m 755 %{SOURCE7} %{SOURCE8} %{buildroot}%{_sbindir}
-install -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}
+install -m 755 contrib/mageia/dhcpreport.pl contrib/mageia/dhcpd-chroot.sh %{buildroot}%{_sbindir}
+install -m 644 contrib/mageia/dhcpd.conf %{buildroot}%{_sysconfdir}
 install -m 755 contrib/ldap/dhcpd-conf-to-ldap %{buildroot}%{_sbindir}
 
 # install exit-hooks script to /etc/
-install -m 755 %{SOURCE9} %{buildroot}%{_sysconfdir}
+install -m 755 contrib/mageia/dhclient-exit-hooks %{buildroot}%{_sysconfdir}
 
 install -d %{buildroot}%{_sysconfdir}/sysconfig
 cat > %{buildroot}%{_sysconfdir}/sysconfig/dhcpd <<EOF
