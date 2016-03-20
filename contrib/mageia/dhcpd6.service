@@ -1,0 +1,13 @@
+[Unit]
+Description=DHCPv6 Server Daemon
+After=syslog.target network.target
+
+[Service]
+Environment=CONFIGFILE=/etc/dhcpd6.conf LEASEFILE=/var/lib/dhcp/dhcpd6.leases
+EnvironmentFile=-/etc/sysconfig/dhcpd6
+Type=forking
+PIDFile=/var/run/dhcpd6.pid
+ExecStart=/usr/sbin/dhcpd -6 -pf /var/run/dhcpd6.pid -cf $CONFIGFILE -lf $LEASEFILE $OPTIONS $INTERFACES
+
+[Install]
+WantedBy=multi-user.target
